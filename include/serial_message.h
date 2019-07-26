@@ -11,22 +11,18 @@ namespace furgbol {
 namespace joystick {
 
 enum SerialMessageHeaderFlags {
-    ROBOT_ID = 0, VEL_WHEEL_ONE = 1, VEL_WHEEL_TWO = 2, VEL_WHEEL_THREE = 3, VEL_WHEEL_FOUR = 4, DIRECTION = 5, DRIBBLER = 6, KICK = 7
+    ROBOT_ID = 0, VEL_X = 1, VEL_Y = 2, VEL_THETA = 3, DIRECTION = 5
 };
 
 class SerialMessage {
     private:
-        uint16_t pkg_id_;
-        uint8_t msg_type_;
         uint8_t robot_id_;
-        uint8_t wheels_vel_[4];
-        uint8_t wheels_dir_[4]; 
-        uint8_t dribbler_;
-        uint8_t kick_;
+        uint8_t vel_[3];
+        uint8_t dir_[3]; 
 
     public:
         SerialMessage();
-        SerialMessage(uint16_t pkg_id, uint8_t msg_type, uint8_t robot_id, uint8_t *wheels_vel, uint8_t dribbler, uint8_t kick);
+        SerialMessage(uint8_t robot_id, uint8_t *vel);
         ~SerialMessage();
 
         void serialize(std::vector<unsigned char> &buffer);
@@ -36,18 +32,12 @@ class SerialMessage {
         friend std::ostream &operator <<(std::ostream &, SerialMessage const &);
 
         void setRobotId(uint8_t id);
-        void setWheelsVel(uint8_t* vel);
-        void setWheelsDir(uint8_t* wheels_dir);
-        void setDribbler(uint8_t dribbler);
-        void setKick(uint8_t kick);
+        void setVel(uint8_t* vel);
+        void setDir(uint8_t* dir);
 
-        uint16_t getPkgId();
-        uint8_t getMsgType();
         uint8_t getRobotId();
-        uint8_t *getWheelsVel();
-        uint8_t *getWheelsDir();
-        uint8_t getDribbler();
-        uint8_t getKick();
+        uint8_t *getVel();
+        uint8_t *getDir();
 };
 
 }  // namespace joystick

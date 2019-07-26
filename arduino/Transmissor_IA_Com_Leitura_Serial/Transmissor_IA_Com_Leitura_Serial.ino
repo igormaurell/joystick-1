@@ -7,8 +7,8 @@
 
 RF24 radio(CE, CSN); // Define quais serão os pinos do arduino usados para conectar o CE e o CS no rádio
 
-uint8_t dados[8];
-int tx_dados[7];
+uint8_t dados[5];
+int tx_dados[5];
 int i;
 //dado={id,velocidade1,velocidade2,velocidade3,velocidade4,power,dribler}
 
@@ -20,9 +20,10 @@ void setup()
 {
   Serial.begin(115200);
   radio.begin();
-  radio.setChannel(73);
-  radio.openWritingPipe(pipe[1]); // Começa a enviar msg para os robos
-
+  radio.setPALevel(RF24_PA_MIN);
+  radio.setChannel(111);
+  radio.openWritingPipe(pipe[0]); // Começa a enviar msg para os robos
+  radio.stopListening();
 }
 
 void loop()
@@ -42,16 +43,12 @@ void loop()
     if (cont == sizeof(dados)) {
       cont = 0;
       tx_dados[0] = dados[0];
-      tx_dados[5] = dados[6];
-      tx_dados[6] = dados[7];
-
       
-      tx_dados[1] = dados[1] | (uint8_t) (dados[5] << 7);
-      tx_dados[2] = dados[2] | (uint8_t) ((dados[5] >> 1) << 7);
-      tx_dados[3] = dados[3] | (uint8_t) ((dados[5] >> 2) << 7);
-      tx_dados[4] = dados[4] | (uint8_t) ((dados[5] >> 3) << 7);
+      tx_dados[1] = dados[1] | (uint8_t) (dados[4] << 7);
+      tx_dados[2] = dados[2] | (uint8_t) ((dados[4] >> 1) << 7);
+      tx_dados[3] = dados[3] | (uint8_t) ((dados[4] >> 2) << 7);
 
-      for(int i = 0; i<7;i++) {
+      for(int i = 0; i<5;i++) {
         Serial.print("DADO ");
         Serial.print(i);
         Serial.print(": ");
@@ -62,13 +59,4 @@ void loop()
       radio.write(&tx_dados, sizeof(tx_dados));
     }
   }
-  /*for (i = 1; i < 5; i++) {
-    dado[i] = map(Dado[i], -3000, 3000, 0, 255);
-  }
-  Serial.println("Começa aqui");
-  for (int cont = 0; cont < 7; cont++)
-  {
-    Serial.println(dado[cont]);
-  }
-  radio.write( &dado, sizeof(dado)); // Envia as informações para o rádio*/
 }
